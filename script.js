@@ -5,8 +5,17 @@ async function getWeather(city) {
   try {
     const response = await fetch(URL);
     const weatherData = await response.json();
-    console.log(weatherData);
+    const processed = processWeatherData(weatherData);
+    console.log(processed);
   } catch (err) {
     console.error("City not found");
   }
+}
+
+function processWeatherData(data) {
+  return {
+    address: data.address,
+    temp: data.currentConditions.temp,
+    conditions: data.currentConditions.conditions,
+  };
 }
