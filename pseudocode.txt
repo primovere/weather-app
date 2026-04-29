@@ -1,0 +1,23 @@
+Users can:
+Type a city name into a search box
+Press a search button
+See the result
+
+WHEN the user presses search button
+  IF search input is empty
+    SHOW error message "Please enter a city"
+    RETURN
+
+  SET city = search input value
+  SET url =  `url/${city}?...`
+  
+  TRY
+    CALL fetch(url)
+    GET response data
+    PARSE response to get temperature, conditions, etc.
+    UPDATE UI with weather results
+  CATCH error
+    SHOW error message "City not found"
+
+
+
