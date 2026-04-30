@@ -1,4 +1,6 @@
+const form = document.querySelector("form");
 const display = document.querySelector(".display");
+const addressInput = document.querySelector("#address");
 
 async function getWeather(city) {
   const URL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=6699YUL929BVGXBW9L6FSM5NF&contentType=json`;
@@ -31,3 +33,17 @@ function displayData(data) {
   <span>${data.conditions}</span>
   `;
 }
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const city = addressInput.value.trim();
+
+  if (!city) return;
+
+  const data = await getWeather(city);
+
+  if (!data) return;
+
+  displayData(data);
+});
