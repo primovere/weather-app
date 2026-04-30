@@ -34,12 +34,20 @@ function displayData(data) {
   `;
 }
 
+function showLoading() {
+  display.innerHTML = `
+    <p class='loading'>Loading</p>
+  `;
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const city = addressInput.value.trim();
 
   if (!city) return;
+
+  showLoading();
 
   const data = await getWeather(city);
 
