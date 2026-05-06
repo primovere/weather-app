@@ -24,9 +24,17 @@ async function getWeather(city) {
     const response = await fetch(URL);
     const weatherData = await response.json();
     const processed = processWeatherData(weatherData);
-    return processed;
+    return {
+      status: "success",
+      data: processed,
+      error: null,
+    };
   } catch (err) {
-    return err;
+    return {
+      status: "error",
+      data: null,
+      error: err,
+    };
   }
 }
 
@@ -55,7 +63,7 @@ function render(state) {
         `;
       break;
     case "error":
-      display.innerHTML = `<p>${state.error}</p>`;
+      display.innerHTML = `<p class='error'>City not found.</p>`;
   }
 }
 
@@ -68,5 +76,7 @@ form.addEventListener("submit", async (e) => {
 
   setState({ status: "loading" });
 
-  const weather = await getWeather(city);
+  const result = await getWeather(city);
+
+  setState(result);
 });
