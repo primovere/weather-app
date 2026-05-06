@@ -1,6 +1,20 @@
 const form = document.querySelector("form");
 const display = document.querySelector(".display");
 const addressInput = document.querySelector("#address");
+const state = {
+  status: "idle",
+  data: null,
+  error: null,
+};
+
+function setState(newState) {
+  let keys = Object.keys(state);
+  keys.forEach((key) => {
+    if (!Object.hasOwn(newState, key)) return;
+    state[key] = newState[key];
+  });
+  render(state);
+}
 
 async function getWeather(city) {
   const URL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=6699YUL929BVGXBW9L6FSM5NF&contentType=json`;
@@ -12,7 +26,7 @@ async function getWeather(city) {
     const processed = processWeatherData(weatherData);
     return processed;
   } catch (err) {
-    console.error("City not found");
+    return err;
   }
 }
 
@@ -24,20 +38,25 @@ function processWeatherData(data) {
   };
 }
 
-function displayData(data) {
-  display.innerHTML = `
-  <h2>${data.address}</h2>
-  <h3>Temperature</h3>
-  <span>${data.temp}</span>
-  <h3>Weather</h3>
-  <span>${data.conditions}</span>
-  `;
-}
-
-function showLoading() {
-  display.innerHTML = `
-    <p class='loading'>Loading</p>
-  `;
+function render(state) {
+  switch (state.status) {
+    case "idle":
+      break;
+    case "loading":
+      display.innerHTML = `<p class='loading'>Loading</p>`;
+      break;
+    case "success":
+      display.innerHTML = `
+        <h2>${state.data.address}</h2>
+        <h3>Temperature</h3>
+        <span>${state.data.temp}</span>
+        <h3>Weather</h3>
+        <span>${state.data.conditions}</span>
+        `;
+      break;
+    case "error":
+      display.innerHTML = `<p>${state.error}</p>`;
+  }
 }
 
 form.addEventListener("submit", async (e) => {
@@ -47,11 +66,7 @@ form.addEventListener("submit", async (e) => {
 
   if (!city) return;
 
-  showLoading();
+  setState({ status: "loading" });
 
-  const data = await getWeather(city);
-
-  if (!data) return;
-
-  displayData(data);
+  const weather = await getWeather(city);
 });
